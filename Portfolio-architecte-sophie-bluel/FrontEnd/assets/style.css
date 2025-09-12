@@ -34,7 +34,6 @@ body {
   background-color: #fffef8;
   font-family: 'Work Sans';
   font-size: 14px;
-  margin: 0;
   min-height: 100vh;
   position: relative;  /* Pour le positionnement du footer */
   padding-bottom: 60px; /* Espace pour le footer (ajuster selon la hauteur réelle) */
@@ -46,11 +45,93 @@ a {
 }
 a:hover { font-weight: bold; }
 
-.container {
+/* ----- Barre noire en haut ----- */
+.topbar {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 59px;
+  background: #000000;
+  color: #fffef8;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centre horizontalement le contenu */
+  gap: 10px;               /* espace entre icône et texte */
+  font-family: 'Work Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1000;
+  box-shadow: 0 8px 16px rgba(0,0,0,.12); /* ombre légère comme la maquette */
+}
+
+.topbar i {
+  color: #fffef8;
+  font-size: 16px;
+}
+
+/* ----- Bouton “modifier” ----- */
+/* Conteneur pour le titre et le bouton */
+#portfolio {
+  text-align: center;
+}
+
+/* Wrapper pour aligner titre + bouton */
+/* Conteneur pour titre + bouton */
+.projets-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;  
+  margin: 50px 0 80px 0;
+}
+
+/* Le titre */
+.projets-header h2 {
+  margin: 0;
+  color: #1D6154;
+  font-family: 'Syne';
+  font-weight: 700;
+  font-size: 30px;
+}
+
+/* Le bouton modifier */
+.edit-btn {
+  display: none;  /* Caché par défaut */
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Work Sans';
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
+  cursor: pointer;
+}
+
+/* Visible seulement en mode admin */
+.is-admin .edit-btn {
+  display: flex;  
+}
+
+.edit-btn i {
+  font-size: 16px;
+}
+
+.edit-btn:hover {
+  color: #1D6154;
+}
+
+/* Cacher les filtres en mode admin */
+.is-admin #filters,
+.is-admin .div-categories {
+  display: none;
+}
+
+.container{
   max-width: 1140px;
   margin: 0 auto;
-  padding: 0 20px;
-  min-height: calc(100vh - 60px); /* Hauteur totale moins le footer */
+  padding: 0 20px 0; 
 }
 
 /* ===== Layout global ===== */
@@ -61,7 +142,7 @@ header {
 }
 
 section { 
-  margin: 50px 0;
+  margin: 0 0 90px 0;
 }
 
 /* ===== Titres ===== */
@@ -112,38 +193,40 @@ li:hover { color: #B1663C; }
 #introduction h2 { margin-bottom: 1em; }
 #introduction p { margin-bottom: 0.5em; }
 
-/* ===== Portfolio ===== */
-#portfolio h2 {
-  text-align: center;
-  margin-bottom: 1em;
+
+/* Zone filtres */
+.div-categories{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  margin:50px 0;
+  flex-wrap:wrap;
 }
 
-/* Filtres */
-.div-categories {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin: 50px 0;
-  flex-wrap: wrap;
+/* Les boutons-pills (remplace l’ancien .div-categories div) */
+.div-categories .filter{
+  appearance:none;           /* reset bouton natif */
+  -webkit-appearance:none;
+  border:1px solid #1D6154;
+  background:#fff;           /* ou #e7f1f5 si tu veux */
+  color:#1D6154;
+  padding:10px 25px;
+  border-radius:60px;
+  font-family:'Syne', sans-serif;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  user-select:none;
+  transition:all .2s ease;
 }
-.div-categories div {
-  padding: 10px 25px;
-  border: 1px solid #1D6154;
-  color: #1D6154;
-  border-radius: 60px;
-  font-family: 'Syne', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  user-select: none;
+
+.div-categories .filter:hover,
+.div-categories .filter.is-active{
+  background:#1D6154;
+  color:#fff;
 }
-.div-categories div:hover,
-.div-categories div.active {
-  background-color: #1D6154;
-  color: #fff;
-}
+
 
 /* Grille */
 .gallery {
@@ -154,26 +237,37 @@ li:hover { color: #B1663C; }
 }
 .gallery img { width: 100%; }
 
-/* ===== Contact ===== */
-#contact {
+.gallery figure {
+  display: block;              /* par défaut visible */
+  transition: opacity .3s ease;
+}
+
+.gallery figure.is-hidden {
+  display: none;             
+}
+
+
+/* ===== Contact + Login ===== */
+#contact,
+#login {
   width: 50%;
   margin: auto;
 }
-#contact > * { text-align: center; }
-#contact h2 { margin-bottom: 20px; }
-#contact form {
+#contact, #login > * { text-align: center; }
+#contact h2, #login h2 { margin-bottom: 20px; }
+#contact form, #login form {
   text-align: left;
   margin: 30px 0;
   display: flex;
   flex-direction: column;
 }
-#contact input {
+#contact input, #login input {
   height: 50px;
   font-size: 1.2em;
   border: none;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+#contact label, #login label {
   margin: 2em 0 1em 0;
   font-weight: 500;
 }
@@ -193,29 +287,7 @@ input[type="submit"] {
   cursor: pointer;
 }
 
-/* ===== Login ===== */
-#login {
-  width: 50%;
-  margin: auto;
-}
-#login > * { text-align: center; }
-#login h2 { margin-bottom: 20px; }
-#login form {
-  text-align: left;
-  margin: 30px 0;
-  display: flex;
-  flex-direction: column;
-}
-#login input {
-  height: 50px;
-  font-size: 1.2em;
-  border: none;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
-}
-#login label {
-  margin: 2em 0 1em 0;
-  font-weight: 500;
-}
+
 #login form a {
   text-decoration: underline;
   color: #3d3d3d;
@@ -253,4 +325,15 @@ footer nav ul li a:hover {
   font-weight: 500;
 }
 
+.error-message {
+    background-color: #ffe6e6;  
+    border: 1px solid #ffcccc;
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(255, 0, 0, 0.1);
+	display: none;
+}
 
