@@ -79,7 +79,81 @@ window.addEventListener("load", async () => { //Attend que TOUTE la page soit ch
 
   await getWorks();
   await getCategories();
+
+  
+  // Récupérer le bouton modifier
+  const editBtn = document.querySelector('.edit-btn');
+  console.log("Bouton trouvé:", editBtn); // Pour débugger
+  
+  if (editBtn) {
+    editBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log("Clic sur modifier !"); // Pour débugger
+      
+      // Créer et ouvrir la modale
+      openModal();
+    });
+  }
+
+
+// Fonction pour créer/ouvrir la modale
+// Fonction pour ouvrir la modale avec la galerie
+async function openModal() {
+  // Vérifier si elle existe déjà
+  let modal = document.getElementById('modal');
+  
+  if (!modal) {
+    // Créer la modale
+    modal = document.createElement('div');
+    modal.id = 'modal';
+  
+    
+    document.body.appendChild(modal);
+    
+    // Fermer au clic en dehors
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+  
+  // Charger et afficher la galerie
+  await loadGalleryView();
+  modal.style.display = 'flex';
+}
+
+// Charger la vue galerie
+async function loadGalleryView() {
+  try {
+    // Récupérer les projets
+    const response = await fetch("http://localhost:5678/api/works");
+    const works = await response.json();
+    
+    // Injecter le contenu
+    const content = document.querySelector('.modal-content');
+  
+
+    
+    // Attacher les événements
+    document.querySelector('.close-btn').addEventListener('click', () => {
+      document.getElementById('modal').style.display = 'none';
+    });
+    
+    // Pour l'instant, log au clic sur supprimer
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log('Supprimer:', btn.dataset.id);
+      });
+    });
+    
+  } catch (error) {
+    console.error('Erreur chargement galerie:', error);
+  }
+}
 }); 
+
 
 function displayAdminMode() {
   const token = sessionStorage.getItem("authToken"); //Récupère le token d'authentification depuis sessionStorage (null si pas connecté)//
@@ -120,6 +194,9 @@ function displayAdminMode() {
 }
 
 displayAdminMode(); //Appelle au charegement de la page//
+
+
+
 
 
 //1.	J’ai utilisé forEach au lieu de for (...) plus lisible.//
