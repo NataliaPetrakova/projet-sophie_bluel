@@ -1,188 +1,435 @@
-/* http://meyerweb.com/eric/tools/css/reset/
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-
+/* ===== Reset (Eric Meyer) ===== */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+b, u, i, center, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption,
+tbody, tfoot, thead, tr, th, td, article, aside,
+canvas, details, embed, figure, figcaption, footer,
+header, hgroup, menu, nav, output, ruby, section,
+summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
 }
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
+footer, header, hgroup, menu, nav, section { display: block; }
+
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+blockquote::before, blockquote::after,
+q::before, q::after { content: ''; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+/* ===== Base ===== */
 body {
-	line-height: 1;
+  line-height: 1;
+  background-color: #fffef8;
+  font-family: 'Work Sans';
+  font-size: 14px;
+  min-height: 100vh;
+  position: relative;  /* Pour le positionnement du footer */
+  padding-bottom: 60px; /* Espace pour le footer (ajuster selon la hauteur réelle) */
 }
-ol, ul {
-	list-style: none;
+
+a {
+  text-decoration: none;
+  color: #3d3d3d;
 }
-blockquote, q {
-	quotes: none;
+a:hover { font-weight: bold; }
+
+/* ----- Barre noire en haut ----- */
+.topbar {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 59px;
+  background: #000000;
+  color: #fffef8;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centre horizontalement le contenu */
+  gap: 10px;               /* espace entre icône et texte */
+  font-family: 'Work Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1000;
+  box-shadow: 0 8px 16px rgba(0,0,0,.12); /* ombre légère comme la maquette */
 }
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
+
+.topbar i {
+  color: #fffef8;
+  font-size: 16px;
 }
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
+
+/* ----- Bouton “modifier” ----- */
+/* Conteneur pour le titre et le bouton */
+#portfolio {
+  text-align: center;
 }
-/** end reset css**/
-body {
-	max-width: 1140px;
-	margin:auto;
-	font-family: 'Work Sans' ;
-	font-size: 14px;
+
+/* Wrapper pour aligner titre + bouton */
+/* Conteneur pour titre + bouton */
+.projets-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;  
+  margin: 50px 0 80px 0;
 }
+
+/* Le titre */
+.projets-header h2 {
+  margin: 0;
+  color: #1D6154;
+  font-family: 'Syne';
+  font-weight: 700;
+  font-size: 30px;
+}
+
+/* Le bouton modifier */
+.edit-btn {
+  display: none;  /* Caché par défaut */
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Work Sans';
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
+  cursor: pointer;
+}
+
+/* Visible seulement en mode admin */
+.is-admin .edit-btn {
+  display: flex;  
+}
+
+.edit-btn i {
+  font-size: 16px;
+}
+
+.edit-btn:hover {
+  color: #1D6154;
+}
+
+/* Cacher les filtres en mode admin */
+.is-admin #filters,
+.is-admin .div-categories {
+  display: none;
+}
+
+.container{
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px 0; 
+}
+
+/* ===== Layout global ===== */
 header {
-	display: flex;
-	justify-content: space-between;
-	margin: 50px 0
-}
-section {
-	margin: 50px 0
+  display: flex;
+  justify-content: space-between;
+  padding: 50px 0;
 }
 
-h1{
-	display: flex;
-	flex-direction: column;
-	font-family: 'Syne';
-	font-size: 22px;
-	font-weight: 800;
-	color: #B1663C
+section { 
+  margin: 0 0 90px 0;
 }
 
+/* ===== Titres ===== */
+h1 {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Syne';
+  font-size: 22px;
+  font-weight: 800;
+  color: #B1663C;
+}
 h1 > span {
-	font-family: 'Work Sans';
-	font-size:10px;
-	letter-spacing: 0.1em;
-;
+  font-family: 'Work Sans';
+  font-size: 10px;
+  letter-spacing: 0.1em;
 }
 
-h2{
-	font-family: 'Syne';
-	font-weight: 700;
-	font-size: 30px;
-	color: #1D6154
+h2 {
+  font-family: 'Syne';
+  font-weight: 700;
+  font-size: 30px;
+  color: #1D6154;
 }
+
+/* ===== Nav ===== */
 nav ul {
-	display: flex;
-	align-items: center;
-	list-style-type: none;
-
+  display: flex;
+  align-items: center;
 }
 nav li {
-	padding: 0 10px;
-	font-size: 1.2em;
+  padding: 0 10px;
+  font-size: 1.2em;
 }
+li:hover { color: #B1663C; }
 
-li:hover {
-	color: #B1663C;
-}
+/* ===== Introduction ===== */
 #introduction {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
-#introduction figure {
-	flex: 1
-}
+#introduction figure { flex: 1; }
 #introduction img {
-	display: block;
-	margin: auto;
-	width: 80%;
+  display: block;
+  margin: auto;
+  width: 80%;
+}
+#introduction article { flex: 1; }
+#introduction h2 { margin-bottom: 1em; }
+#introduction p { margin-bottom: 0.5em; }
+
+
+/* Zone filtres */
+.div-categories{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  margin:50px 0;
+  flex-wrap:wrap;
 }
 
-#introduction article {
-	flex: 1
-}
-#introduction h2 {
-	margin-bottom: 1em;
+/* Les boutons-pills (remplace l’ancien .div-categories div) */
+.div-categories .filter{
+  appearance:none;           /* reset bouton natif */
+  -webkit-appearance:none;
+  border:1px solid #1D6154;
+  background:#fff;           /* ou #e7f1f5 si tu veux */
+  color:#1D6154;
+  padding:10px 25px;
+  border-radius:60px;
+  font-family:'Syne', sans-serif;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  user-select:none;
+  transition:all .2s ease;
 }
 
-#introduction p {
-	margin-bottom: 0.5em;
+.div-categories .filter:hover,
+.div-categories .filter.is-active{
+  background:#1D6154;
+  color:#fff;
 }
-#portfolio h2 {
-	text-align: center;
-	margin-bottom: 1em;
-}
+
+
+/* Grille */
 .gallery {
-	width: 100%;
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	grid-column-gap: 20px;
-	grid-row-gap: 20px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+.gallery img { width: 100%; }
+
+.gallery figure {
+  display: block;              /* par défaut visible */
+  transition: opacity .3s ease;
 }
 
-.gallery img {
-	width: 100%;
-
-}
-#contact {
-	width: 50%;
-margin: auto;
-}
-#contact > * {
-	text-align: center;
-
-}
-#contact h2{
-	margin-bottom: 20px;
-}
-#contact form {
-	text-align: left;
-	margin-top:30px;
-	display: flex;
-	flex-direction: column;
+.gallery figure.is-hidden {
+  display: none;             
 }
 
-#contact input {
-	height: 50px;
-	font-size: 1.2em;
-	border: none;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+
+/* ===== Contact + Login ===== */
+#contact,
+#login {
+  width: 50%;
+  margin: auto;
 }
-#contact label {
-	margin: 2em 0 1em 0;
+#contact, #login > * { text-align: center; }
+#contact h2, #login h2 { margin-bottom: 20px; }
+#contact form, #login form {
+  text-align: left;
+  margin: 30px 0;
+  display: flex;
+  flex-direction: column;
+}
+#contact input, #login input {
+  height: 50px;
+  font-size: 1.2em;
+  border: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+}
+#contact label, #login label {
+  margin: 2em 0 1em 0;
+  font-weight: 500;
 }
 #contact textarea {
-	border: none;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+  border: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+}
+input[type="submit"] {
+  font-family: 'Syne';
+  font-weight: 700;
+  color: #fff;
+  background-color: #1D6154;
+  margin: 2em auto;
+  width: 180px;
+  text-align: center;
+  border-radius: 60px;
+  cursor: pointer;
 }
 
-input[type="submit"]{
-	font-family: 'Syne';
-	font-weight: 700;
-	color: white;
-	background-color: #1D6154;
-	margin : 2em auto ;
-	width: 180px;
-	text-align: center;
-	border-radius: 60px ;
+
+#login form a {
+  text-decoration: underline;
+  color: #3d3d3d;
+  font-weight: 500;
+}
+#login form p {
+  text-align: center;
+  margin-top: 15px;
 }
 
+/* ===== Footer ===== */
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  width: 100%;
+  padding: 20px 0;
+}
+footer nav {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 footer nav ul {
-	display: flex;
-	justify-content: flex-end;
-	margin: 2em
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+footer nav ul li a { 
+  font-size: 14px;
+  font-weight: 400;
+}
+footer nav ul li a:hover { 
+  font-weight: 500;
 }
 
+.error-message {
+    background-color: #ffe6e6;  
+    border: 1px solid #ffcccc;
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(255, 0, 0, 0.1);
+	display: none;
+}
+
+/* overlay */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* box */
+.modal-content {
+  background: #fff;
+  padding: 60px 30px;
+  border-radius: 10px;
+  width: 630px;
+  max-width: 90%;
+  position: relative;
+  font-family: 'Work Sans', sans-serif;
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: 400;
+  font-size: 26px;
+  color: #000;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* galerie */
+.modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 40px;
+}
+.modal-gallery figure {
+  position: relative;
+  margin: 0;
+}
+.modal-gallery img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+.delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: black;
+  color: white;
+  border: none;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+/* Boutons */
+.btn-add, .btn-validate {
+  background: #1D6154;
+  color: white;
+  padding: 10px 49px;
+  border-radius: 60px;
+  border: none;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-add {
+  margin-top: 20px;
+}
+
+/* Formulaire ajout */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.modal-form input, .modal-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
