@@ -421,15 +421,198 @@ footer nav ul li a:hover {
   margin-top: 20px;
 }
 
-/* Formulaire ajout */
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+/* ========== STYLES DE LA MODALE ========== */
+
+/* Overlay de la modale */
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
-.modal-form input, .modal-form select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+
+#modal.show {
+  display: flex;
+}
+
+/* Container de la modale */
+.modal-wrapper {
+  position: relative;
+  background-color: white;
+  border-radius: 10px;
+  padding: 60px 100px 45px;
+  width: 90%;
+  max-width: 630px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* Bouton de fermeture */
+.modal-close {
+  position: absolute;
+  top: 26px;
+  right: 30px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  color: #000;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+/* Titre de la modale */
+.modal-title {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  text-align: center;
+  color: #000;
+  margin: 0 0 46px 0;
+}
+
+/* Galerie modale - MÊME PRINCIPE que .gallery principale */
+.modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
+  margin-bottom: 47px;
+  grid-auto-rows: auto; /* Hauteurs automatiques pour chaque ligne */
+  align-items: start; /* Aligne en haut */
+}
+
+/* Figures dans la modale - proportions naturelles comme la maquette */
+.modal-gallery figure,
+.modal-figure {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  /* PAS d'aspect-ratio forcé - hauteurs variables */
+}
+
+.modal-gallery figure img,
+.modal-figure img {
+  width: 100%;
+  height: auto; /* Hauteur automatique = proportions naturelles */
+  display: block;
+  vertical-align: middle;
+}
+
+/* Bouton de suppression sur chaque image */
+.delete-work {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 17px;
+  height: 17px;
+  background-color: #000;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: white;
+  font-size: 9px;
+}
+
+.delete-work:hover {
+  background-color: #B1663C;
+}
+
+.delete-work i {
+  font-size: 9px;
+  color: white;
+}
+
+/* Séparateur */
+.modal-separator {
+  width: 100%;
+  height: 1px;
+  background-color: #B3B3B3;
+  border: none;
+  margin: 0 0 38px 0;
+}
+
+/* Bouton ajouter une photo */
+.btn-add-photo {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 49px;
+  background-color: #1D6154;
+  color: white;
+  border: none;
+  border-radius: 60px;
+  font-family: 'Syne', sans-serif;
   font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-add-photo:hover {
+  background-color: #0E2F28;
+}
+
+/* Responsive pour tablettes */
+@media (max-width: 768px) {
+  .modal-wrapper {
+    padding: 40px 30px;
+    width: 95%;
+  }
+  
+  .modal-gallery {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Responsive pour mobiles */
+@media (max-width: 480px) {
+  .modal-gallery {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 8px;
+  }
+  
+  .btn-add-photo {
+    padding: 10px 30px;
+    font-size: 13px;
+  }
+  
+  .modal-wrapper {
+    padding: 30px 20px;
+  }
+}
+
+/* Scrollbar personnalisée */
+.modal-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.modal-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.modal-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
