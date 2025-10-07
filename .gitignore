@@ -2,3 +2,5 @@
 FrontEnd/.DS_Store
 .DS_Store
 Backend/database.sqlite
+Backend/database.sqlite
+Backend/*.sqlite
