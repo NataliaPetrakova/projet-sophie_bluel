@@ -58,7 +58,6 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
       return; // Stop la fonction
     }
     
-    //gallery.innerHTML = ""; // Vide la galerie avant de la remplir (évite les doublons)
     gallery.replaceChildren(); //Remettre à zéro
     
     // Utiliser for au lieu de forEach
@@ -79,14 +78,12 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
   // ========== FILTRAGE (avec classList.toggle) ==========
   function applyFilter(id) { // Fonction qui masque/affiche selon la catégorie
     console.log(`=== FILTRAGE : ID cliqué = "${id}" (type: ${typeof id}) ===`); // Debug
-    let visibleCount = 0; // Compteur pour vérifier combien d'images sont visibles
     
     for (let i = 0; i < figures.length; i++) { // Parcourt toutes les figures
       const figCatId = figures[i].dataset.catId; // ID de catégorie de la figure
       const show = !id || String(figCatId) === String(id); // true si "Tous" (!id) ou si catégorie correspond (conversion en string pour comparaison stricte)
       
       figures[i].classList.toggle("is-hidden", !show); // Ajoute is-hidden si !show=true, retire si false
-      if (show) visibleCount++; // Montre combien d'images sont affichées au final
   }  
 }
 
@@ -100,7 +97,6 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
       return; // Stop la fonction
     }
     
-    //categoriesDiv.innerHTML = ''; // Vide le conteneur des boutons
     categoriesDiv.replaceChildren();
     
     // Créer le bouton "Tous"
@@ -266,9 +262,7 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
       console.error('Impossible de charger les catégories'); // Affiche une erreur dans la console
       return;
     }
-    
-    // REMETTRE À ZÉRO
-    //select.replaceChildren(); // Vide toutes les options du select
+
     
     // ===== OPTIONS DES CATÉGORIES =====
     for (let i = 0; i < cats.length; i++) { // Boucle sur chaque catégorie retournée par l'API
