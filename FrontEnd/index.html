@@ -16,11 +16,9 @@
 src="https://kit.fontawesome.com/2df4fe767c.js"
 crossorigin="anonymous"></script>
 
-  <!-- Bande noire en haut -->
-  <!-- <div class="topbar">
-   <i class="fa-regular fa-pen-to-square"></i>
-    Mode édition
-  </div>-->
+  <div class="topbar">
+   <i class="fa-regular fa-pen-to-square"></i>Mode édition
+  </div>
 
   <div class="container">
 <header>
@@ -57,13 +55,6 @@ crossorigin="anonymous"></script>
 		<i class="fa-regular fa-pen-to-square"></i> modifier</button>
 	</div>
 
-<!-- Modale de la galerie -->
-<div id="modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-modal="true">
-  <div class="modal-wrapper">
-    <button type="button" class="modal-close" aria-label="Fermer la modale">×</button>
-    <!-- Le contenu JavaScript -->
-  </div>
-</div>
 
     <div class="div-categories">
     <!--  <div id="tous">Tous</div> -->
@@ -144,6 +135,79 @@ crossorigin="anonymous"></script>
     </ul>
   </nav>
 </footer>
+
+
+<!-- ========== MODALES ========== -->
+  
+  <!-- MODALE : Vue Galerie -->
+  <aside id="modal-gallery" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modal-gallery-title">
+    <div class="modal-wrapper">
+      <button type="button" class="modal-close" aria-label="Fermer la fenêtre">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <h2 id="modal-gallery-title" class="modal-title">Galerie photo</h2>
+      
+      <div class="modal-content">
+        <div class="modal-gallery" id="modal-gallery-grid">
+          <!-- Les miniatures seront insérées ici dynamiquement -->
+        </div>
+        
+        <hr class="modal-separator">
+        
+        <button type="button" class="btn-add-photo" id="btn-show-add">
+          Ajouter une photo
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MODALE : Vue Ajout Photo -->
+  <aside id="modal-add" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modal-add-title">
+    <div class="modal-wrapper">
+      <button type="button" class="modal-back" aria-label="Retour à la galerie">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      
+      <button type="button" class="modal-close" aria-label="Fermer la fenêtre">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <h2 id="modal-add-title" class="modal-title">Ajout photo</h2>
+      
+      <div class="modal-content">
+        <form class="add-photo-form" id="add-photo-form">
+          
+          <!-- Zone upload -->
+          <div class="upload-zone" id="upload-zone">
+            <i class="fa-regular fa-image"></i>
+            <label for="photo-upload" class="upload-label">+ Ajouter photo</label>
+            <input type="file" id="photo-upload" name="image" accept="image/jpg, image/png" style="display: none;">
+            <p class="upload-info">jpg, png : 4mo max</p>
+          </div>
+          
+          <!-- Champ Titre -->
+          <div class="form-group">
+            <label for="photo-title">Titre</label>
+            <input type="text" id="photo-title" name="title" required>
+          </div>
+          
+          <!-- Champ Catégorie -->
+          <div class="form-group">
+            <label for="photo-category">Catégorie</label>
+            <select id="photo-category" name="category" required>
+              <option value="" disabled selected hidden></option>
+            </select>
+          </div>
+          
+          <hr class="modal-separator">
+          
+          <button type="submit" class="btn-validate" disabled>Valider</button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
 
 <!-- Script principal -->
 <script src="script.js"></script>

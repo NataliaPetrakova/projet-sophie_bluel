@@ -11,39 +11,30 @@ async function fetchData(url) { // Fonction asynchrone réutilisable pour tous l
 }
 
 // ========== GESTION DU MODE ADMIN (en dehors du load) - accessibles partout ==========
-function displayAdminMode() {
-  const token = sessionStorage.getItem("authToken");
-  const authLink = document.getElementById("authLink");
-  
+function displayAdminMode() { // Fonction qui active/désactive le mode édition selon l'état de connexion
+  const token = sessionStorage.getItem("authToken"); // Récupère le token d'authentification stocké dans sessionStorage
+  const authLink = document.getElementById("authLink"); // Récupère le lien login/logout dans le menu de navigation
   if (!authLink) {
     console.error("authLink introuvable - vérifier le HTML");
     return;
-  }
+  } // Si le lien n'existe pas dans le HTML, affiche une erreur et arrête la fonction
   
-  if (token) {
-    document.body.classList.add("is-admin");
+  if (token) { // Si un token existe (utilisateur connecté)
+    document.body.classList.add("is-admin"); // Ajoute la classe "is-admin" au body (active tous les styles admin (topbar, bouton modifier, etc.))
+    authLink.innerText = "logout"; // Change le texte du lien en "logout"
+    authLink.href = "#"; // Change le lien pour pointer vers "#" (ancre vide)
     
-    if (!document.querySelector(".topbar")) {
-      const bar = document.createElement("div");
-      bar.className = "topbar";
-      bar.innerHTML = `<i class="fa-regular fa-pen-to-square"></i> Mode édition`;
-      document.body.prepend(bar);
-    }
-    
-    authLink.innerText = "logout";
-    authLink.href = "#";
-    authLink.onclick = (e) => {
-      e.preventDefault();
-      sessionStorage.removeItem("authToken");
-      displayAdminMode();
+    authLink.onclick = (e) => { // Attache un gestionnaire de clic pour déconnecter l'utilisateur
+      e.preventDefault(); // Empêche le comportement par défaut du lien
+      sessionStorage.removeItem("authToken"); // Supprime le token de sessionStorage (déconnexion)
+      displayAdminMode(); // Rappelle displayAdminMode pour mettre à jour l'interface
     };
-  } else {
-    document.body.classList.remove("is-admin");
-    document.querySelector(".topbar")?.remove();
     
-    authLink.innerText = "login";
-    authLink.href = "login.html";
-    authLink.onclick = null;
+  } else { // Si pas de token (utilisateur non connecté)
+    document.body.classList.remove("is-admin"); // Retire la classe "is-admin" du body (cache tous les éléments admin)
+    authLink.innerText = "login"; // Remet le texte "login"
+    authLink.href = "login.html"; // Remet le lien vers la page de connexion
+    authLink.onclick = null; // Supprime le gestionnaire de clic
   }
 }
 
@@ -67,7 +58,8 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
       return; // Stop la fonction
     }
     
-    gallery.innerHTML = ""; // Vide la galerie avant de la remplir (évite les doublons)
+    //gallery.innerHTML = ""; // Vide la galerie avant de la remplir (évite les doublons)
+    gallery.replaceChildren(); //Remettre à zéro
     
     // Utiliser for au lieu de forEach
     for (let i = 0; i < works.length; i++) { // Boucle sur chaque projet
@@ -94,11 +86,9 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
       const show = !id || String(figCatId) === String(id); // true si "Tous" (!id) ou si catégorie correspond (conversion en string pour comparaison stricte)
       
       figures[i].classList.toggle("is-hidden", !show); // Ajoute is-hidden si !show=true, retire si false
-      
       if (show) visibleCount++; // Montre combien d'images sont affichées au final
   }  
 }
-
 
 
   // ========== RÉCUPÈRE ET AFFICHE LES CATÉGORIES ==========
@@ -110,7 +100,8 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
       return; // Stop la fonction
     }
     
-    categoriesDiv.innerHTML = ''; // Vide le conteneur des boutons
+    //categoriesDiv.innerHTML = ''; // Vide le conteneur des boutons
+    categoriesDiv.replaceChildren();
     
     // Créer le bouton "Tous"
     const btnTous = document.createElement('button'); // Crée un élément button
@@ -155,349 +146,328 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
   }
 
   // ========== APPELS INITIAUX ==========
-  await getWorks(); // Charge et affiche les projets au démarrage
+  await getWorks(); // Charge et affiche les projets au démarrage (chargement de la page)
   await getCategories(); // Charge et affiche les catégories au démarrage
-  displayAdminMode(); // Active le mode admin si token présent
+  displayAdminMode(); // Active le mode admin si token présent dans sessionStorage
 
-  // ========== GESTION DE LA MODALE (V2) ==========
 
-  // Variables globales pour la modale
-  let modalWorks = null;  // Stockage des works pour éviter les requêtes répétées
-  let currentView = 'gallery';  // Vue actuelle : 'gallery' ou 'add'
+  // ========== GESTION DES MODALES (V3) ==========
+  const modalGallery = document.getElementById('modal-gallery'); // Récupère la modale galerie par son ID
+  const modalAdd = document.getElementById('modal-add'); // Récupère la modale ajout par son ID (Vérifie que 2 modales existent dans le HTML)
 
-  // Éléments de la modale (à récupérer une fois)
-  const modal = document.getElementById('modal'); // Récupère l'élément avec l'ID 'modal' dans le document HTML
-  const modalWrapper = modal?.querySelector('.modal-wrapper'); // Récupère l'élément avec la classe CSS '.modal-wrapper' à l'intérieur de la modale
-  // L'opérateur '?.' est utilisé pour éviter une erreur si 'modal' est null ou undefined
-  // Si 'modal' existe, 'modalWrapper' contiendra l'élément correspondant à '.modal-wrapper'
-  // Sinon, 'modalWrapper' sera undefined
-
-  // ========== VÉRIFIER L'EXISTENCE DE LA MODALE ==========
-  if (!modal || !modalWrapper) {
-    console.error("Structure de modale manquante (#modal/.modal-wrapper)");
-    return; // Stop l'exécution si la modale n'existe pas
+  if (!modalGallery || !modalAdd) {
+    console.error('Modales introuvables dans le HTML');  // Si une des modales est manquante, affiche une erreur
+    return; // Arrête l'exécution pour éviter d'autres erreurs
   }
 
-  // ========== CRÉATION DE LA STRUCTURE DE BASE (UNE SEULE FOIS) ==========
-  function initModal() {
-    // Vider le wrapper une seule fois
-    modalWrapper.innerHTML = '';
 
-    // Bouton fermer (déjà présent dans le HTML : .modal-close) → on branche l'event ici
-    const closeBtn = modal.querySelector('.modal-close');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeModal);
+  // ========== OUVRIR LA MODALE GALERIE (Point d’entrée utilisateur) ==========
+  function openModalGallery() { // Fonction pour afficher la modale galerie
+    if (!document.getElementById('modal-gallery-grid').children.length) {
+      loadGalleryView(); // Vérifie si la galerie de la modale est vide (si - vide, charge les images depuis l'API)
     }
-
-    // Créer le bouton retour (caché par défaut)
-    const backBtn = document.createElement('button');
-    backBtn.type = 'button';
-    backBtn.className = 'modal-back';
-    backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-    backBtn.setAttribute('aria-label', 'Retour à la galerie');
-    backBtn.style.display = 'none';  // Caché au départ
-    backBtn.addEventListener('click', () => switchView('gallery'));
-    modalWrapper.appendChild(backBtn);
-
-    // Créer le titre (dynamique)
-    const title = document.createElement('h2');
-    title.className = 'modal-title';
-    title.id = 'modal-title';  // ID pour le modifier facilement
-    modalWrapper.appendChild(title);
-
-    // Créer le conteneur principal qui contiendra les différentes vues
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-    modalWrapper.appendChild(modalContent);
-
-    // Vue 1 : Galerie
-    const galleryView = document.createElement('div');
-    galleryView.className = 'view-gallery';
-    galleryView.id = 'view-gallery';
-    modalContent.appendChild(galleryView);
-
-    // Vue 2 : Formulaire d'ajout
-    const addView = document.createElement('div');
-    addView.className = 'view-add';
-    addView.id = 'view-add';
-    addView.style.display = 'none';  // Cachée par défaut
-    modalContent.appendChild(addView);
-
-    // Initialiser le contenu de la vue galerie
-    setupGalleryView(galleryView);
-
-    // Initialiser le contenu de la vue ajout
-    setupAddView(addView);
+    
+    modalGallery.classList.add('show'); // Ajoute la classe "show" pour afficher la modale galerie (CSS: display: flex)
+    modalGallery.removeAttribute('aria-hidden'); // Retire l'attribut aria-hidden (pour les lecteurs d'écran)
+    modalGallery.setAttribute('aria-modal', 'true'); // Indique que c'est une modale active (accessibilité)
+    
+    modalAdd.classList.remove('show'); // Cache la modale ajout au cas où elle serait ouverte
+    modalAdd.setAttribute('aria-hidden', 'true'); // Met aria-hidden à "true" sur la modale ajout
+    
+    document.body.classList.add('modal-open'); // Ajoute la classe "modal-open" au body pour bloquer le scroll de la page
   }
 
-  // ========== CHANGER DE VUE ==========
-  function switchView(view) {
-    const galleryView = document.getElementById('view-gallery');
-    const addView = document.getElementById('view-add');
-    const modalTitle = document.getElementById('modal-title');
-    const backBtn = document.querySelector('.modal-back');
+  // ========== OUVRIR LA MODALE AJOUT (Transition naturelle) ==========
+  function openModalAdd() { // Fonction pour afficher la modale d'ajout de photo
+    const select = document.getElementById('photo-category');  // Récupère le select des catégories
+    if (select.options.length === 1) { // Vérifie si le select contient seulement l'option par défaut (donc vide)
+      loadCategories(); // Si oui, charge les catégories depuis l'API
+    }
+    
+    modalAdd.classList.add('show'); // Ajoute la classe "show" pour afficher la modale ajout
+    modalAdd.removeAttribute('aria-hidden'); // Retire aria-hidden pour l'accessibilité
+    modalAdd.setAttribute('aria-modal', 'true'); // Indique que c'est une modale active
+    
+    modalGallery.classList.remove('show'); // Cache la modale galerie au cas où elle serait ouverte
+    modalGallery.setAttribute('aria-hidden', 'true'); // Met aria-hidden à "true" sur la modale galerie
+    
+    document.body.classList.add('modal-open'); // Bloque le scroll de la page
+  }
 
-    currentView = view;
-
-    if (view === 'gallery') {
-      // Afficher la vue galerie
-      galleryView.style.display = 'block';
-      addView.style.display = 'none';
-      modalTitle.textContent = 'Galerie photo';
-      backBtn.style.display = 'none';
-    } else if (view === 'add') {
-      // Afficher la vue ajout
-      galleryView.style.display = 'none';
-      addView.style.display = 'block';
-      modalTitle.textContent = 'Ajout photo';
-      backBtn.style.display = 'block';
+  // ========== FERMER TOUTES LES MODALES (Évite les modales superposées) ==========
+  function closeModals() { // Fonction pour fermer les deux modales et nettoyer l'interface
+    modalGallery.classList.remove('show'); // Retire la classe "show" de la modale galerie 
+    modalGallery.setAttribute('aria-hidden', 'true'); // Ajoute aria-hidden="true" pour l'accessibilité
+    
+    modalAdd.classList.remove('show'); // Retire la classe "show" de la modale ajout
+    modalAdd.setAttribute('aria-hidden', 'true'); // Ajoute aria-hidden="true"
+    
+    document.body.classList.remove('modal-open'); // Retire la classe "modal-open" du body pour réactiver le scroll de la page
+    
+    // REMETTRE À ZÉRO le formulaire (Pas de données restées)
+    const form = document.getElementById('add-photo-form'); // Récupère le formulaire d'ajout
+    if (form) { // Si le formulaire existe
+      form.reset(); // Réinitialise tous les champs du formulaire (vide les inputs, reset le select)
+      
+      const submitBtn = form.querySelector('.btn-validate'); // Récupère le bouton "Valider"
+      if (submitBtn) submitBtn.disabled = true; // Si le bouton existe, le désactive (gris)
+      
+      const uploadZone = document.getElementById('upload-zone'); // Récupère la zone d'upload
+      const preview = uploadZone?.querySelector('img'); // Cherche s'il y a une image de prévisualisation
+      if (preview) preview.remove(); // Si une prévisualisation existe, la supprime
     }
   }
 
-  // ========== OUVRIR LA MODALE ==========
-  function openModal() {
-    // Si c'est la première ouverture, initialiser la structure
-    if (!modalWrapper.querySelector('.modal-content')) {
-      initModal();
+  // ========== CHARGER LA VUE GALERIE (Voir la photo ajoutée) ==========
+  async function loadGalleryView() { // Fonction asynchrone pour remplir la galerie de la modale avec les images
+    const galleryGrid = document.getElementById('modal-gallery-grid'); // Récupère le conteneur de la grille de miniatures dans la modale
+    if (!galleryGrid) return;  // Si le conteneur n'existe pas, arrête la fonction
+    
+    const works = await fetchData("http://localhost:5678/api/works"); // Appelle l'API pour récupérer tous les projets
+    
+    if (!works) { // Si l'API a échoué
+      galleryGrid.innerHTML = '<p>Erreur de chargement</p>'; // Affiche un message d'erreur dans la grille
+      return;  // Arrête la fonction
     }
-
-    // Si les works ne sont pas encore chargés dans la modale, les charger
-    if (!modalWorks) {
-      refreshModalGallery();
+    
+    // REMETTRE À ZÉRO
+    galleryGrid.replaceChildren(); // Vide la grille de miniatures
+    
+    for (let i = 0; i < works.length; i++) { // Boucle sur chaque projet retourné par l'API
+      const figure = document.createElement('figure');  // Crée un élément <figure> pour la miniature
+      figure.className = 'modal-figure';  // Ajoute la classe CSS "modal-figure"
+      figure.dataset.workId = works[i].id; // Stocke l'ID du projet dans un attribut data-work-id
+      
+      const img = document.createElement('img'); // Crée un élément <img> pour l'image
+      img.src = works[i].imageUrl; // Définit la source de l'image
+      img.alt = works[i].title; // Définit le texte alternatif pour l'accessibilité
+      
+     //===== BOUTON DE SUPPRESSION =====
+      const deleteBtn = document.createElement('button'); // Crée un bouton pour supprimer le projet
+      deleteBtn.type = 'button';  // Type "button" pour éviter de soumettre un formulaire
+      deleteBtn.className = 'delete-work'; // Classe CSS pour le style du bouton (petite poubelle noire)
+      deleteBtn.dataset.id = works[i].id; // Stocke l'ID du projet dans le bouton pour savoir quoi supprimer
+      deleteBtn.setAttribute('aria-label', `Supprimer ${works[i].title}`); // Attribut ARIA pour décrire l'action aux lecteurs d'écran
+      deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>'; // Insère l'icône de poubelle FA
+      
+      figure.appendChild(img); // Ajoute l'image à la figure
+      figure.appendChild(deleteBtn); // Ajoute le bouton de suppression à la figure (superposé sur l'image)
+      galleryGrid.appendChild(figure); // Ajoute la figure complète à la grille de la modale
     }
-
-    // Toujours revenir à la vue galerie à l'ouverture
-    switchView('gallery');
-
-    // Afficher la modale (classe + ARIA)
-    modal.classList.add('show');
-    modal.removeAttribute('aria-hidden');
-    modal.setAttribute('aria-modal', 'true');
-    modal.style.display = 'block';
   }
 
-  // ========== FERMER LA MODALE ==========
-  function closeModal() {
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
-    modal.removeAttribute('aria-modal');
-    modal.style.display = 'none';
-
-    // Réinitialiser le formulaire si on était dans la vue ajout
-    const form = document.getElementById('add-photo-form');
-    if (form) form.reset();
-  }
-
-  // ========== RAFRAÎCHIR LA GALERIE DE LA MODALE ==========
-  async function refreshModalGallery() {
-    const galleryGrid = document.getElementById('modal-gallery-grid');
-    if (!galleryGrid) return;
-
-    // Récupérer les works (soit depuis la variable globale, soit depuis l'API)
-    const works = await fetchData("http://localhost:5678/api/works");
-
-    if (!works) {
-      galleryGrid.innerHTML = '<p>Erreur de chargement</p>';
+  // ========== CHARGER LES CATÉGORIES (Actualiser les choix disponibles) ==========
+  async function loadCategories() {  // Fonction asynchrone pour remplir le menu déroulant des catégories
+    const select = document.getElementById('photo-category'); // Récupère l'élément <select> du formulaire d'ajout
+    if (!select) return; // Si le select n'existe pas, arrête la fonction
+    
+    const cats = await fetchData("http://localhost:5678/api/categories"); // Appelle l'API pour récupérer les catégories
+    if (!cats) { // Si l'API a échoué
+      console.error('Impossible de charger les catégories'); // Affiche une erreur dans la console
       return;
     }
-
-    // Stocker les works pour éviter de refaire la requête
-    modalWorks = works;
-
-    // Vider et remplir la grille
-    galleryGrid.innerHTML = '';
-
-    for (let i = 0; i < works.length; i++) {
-      const figure = document.createElement('figure');
-      figure.className = 'modal-figure';
-      figure.dataset.workId = works[i].id;
-
-      const img = document.createElement('img');
-      img.src = works[i].imageUrl;
-      img.alt = works[i].title;
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.type = 'button';
-      deleteBtn.className = 'delete-work';
-      deleteBtn.dataset.id = works[i].id;
-      deleteBtn.setAttribute('aria-label', `Supprimer ${works[i].title}`);
-      deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-      deleteBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        deleteWork(this.dataset.id);
-      });
-
-      figure.appendChild(img);
-      figure.appendChild(deleteBtn);
-      galleryGrid.appendChild(figure);
-    }
-  }
-
-  // ========== CONFIGURATION DE LA VUE GALERIE ==========
-  function setupGalleryView(container) {
-    // Créer la grille de miniatures
-    const modalGallery = document.createElement('div');
-    modalGallery.className = 'modal-gallery';
-    modalGallery.id = 'modal-gallery-grid';
-    container.appendChild(modalGallery);
-
-    // Ligne de séparation
-    const separator = document.createElement('hr');
-    separator.className = 'modal-separator';
-    container.appendChild(separator);
-
-    // Bouton ajouter une photo
-    const addBtn = document.createElement('button');
-    addBtn.type = 'button';
-    addBtn.className = 'btn-add-photo';
-    addBtn.textContent = 'Ajouter une photo';
-    addBtn.addEventListener('click', () => switchView('add'));
-    container.appendChild(addBtn);
-  }
-
-  // ========== CONFIGURATION DE LA VUE AJOUT ==========
-  function setupAddView(container) {
-    // Formulaire d'ajout
-    const form = document.createElement('form');
-    form.className = 'add-photo-form';
-    form.id = 'add-photo-form';
-
-    // Zone de téléchargement d'image
-    const uploadZone = document.createElement('div');
-    uploadZone.className = 'upload-zone';
-    uploadZone.innerHTML = `
-      <i class="fa-regular fa-image"></i>
-      <label for="photo-upload" class="upload-label">+ Ajouter photo</label>
-      <input type="file" id="photo-upload" name="image" accept="image/jpg, image/png" style="display: none;">
-      <p class="upload-info">jpg, png : 4mo max</p>
-    `;
-    form.appendChild(uploadZone);
-
-    // Champ titre
-    const titleGroup = document.createElement('div');
-    titleGroup.className = 'form-group';
-    titleGroup.innerHTML = `
-      <label for="photo-title">Titre</label>
-      <input type="text" id="photo-title" name="title" required>
-    `;
-    form.appendChild(titleGroup);
-
-    // Champ catégorie
-    const categoryGroup = document.createElement('div');
-    categoryGroup.className = 'form-group';
-    categoryGroup.innerHTML = `
-      <label for="photo-category">Catégorie</label>
-      <select id="photo-category" name="category" required>
-        <option value="">-- Choisir une catégorie --</option>
-      </select>
-    `;
-    form.appendChild(categoryGroup);
-
-    // Ligne de séparation
-    const separator = document.createElement('hr');
-    separator.className = 'modal-separator';
-    form.appendChild(separator);
-
-    // Bouton valider
-    const submitBtn = document.createElement('button');
-    submitBtn.type = 'submit';
-    submitBtn.className = 'btn-validate';
-    submitBtn.textContent = 'Valider';
-    submitBtn.disabled = true;  // Désactivé par défaut
-    form.appendChild(submitBtn);
-
-    container.appendChild(form);
-
-    // Charger les catégories dans le select
-    loadCategories();
-  }
-
-  // ========== CHARGER LES CATÉGORIES DANS LE SELECT ==========
-  async function loadCategories() {
-    const select = document.getElementById('photo-category');
-    if (!select) return;
-
-    const cats = await fetchData("http://localhost:5678/api/categories");
-
-    if (!cats) {
-      console.error('Impossible de charger les catégories');
-      return;
-    }
-
-    // Garder l'option par défaut et ajouter les catégories
-    select.innerHTML = '<option value="">-- Choisir une catégorie --</option>';
-
-    for (let i = 0; i < cats.length; i++) {
-      const option = document.createElement('option');
-      option.value = cats[i].id;
-      option.textContent = cats[i].name;
-      select.appendChild(option);
+    
+    // REMETTRE À ZÉRO
+    //select.replaceChildren(); // Vide toutes les options du select
+    
+    // ===== OPTIONS DES CATÉGORIES =====
+    for (let i = 0; i < cats.length; i++) { // Boucle sur chaque catégorie retournée par l'API
+      const option = document.createElement('option'); // Crée un élément <option>
+      option.value = cats[i].id; // Définit la valeur de l'option (l'ID de la catégorie)
+      option.textContent = cats[i].name; // Définit le texte visible (le nom de la catégorie)
+      select.appendChild(option); // Ajoute l'option au select
     }
   }
 
   // ========== SUPPRIMER UN WORK ==========
-  async function deleteWork(id) {
-    const token = sessionStorage.getItem('authToken');
-    if (!token) {
-      alert('Vous devez être connecté');
-      return;
+  async function deleteWork(id) { // Fonction asynchrone pour supprimer un work via l'API
+    const token = sessionStorage.getItem('authToken'); // Récupère le token d'authentification depuis sessionStorage
+    if (!token) {  // Si pas de token (utilisateur non connecté)
+      alert('Vous devez être connecté'); // Affiche un message d'alerte
+      return;  // Arrête la fonction
     }
-
-    if (confirm('Voulez-vous vraiment supprimer ce projet ?')) {
-      try {
+    
+    if (confirm('Voulez-vous vraiment supprimer ce projet ?')) { // Demande confirmation à l'utilisateur avant de supprimer confirm retourne true si OK, false si Annuler
+      try { // Fait un appel API DELETE pour supprimer le projet
         const res = await fetch(`http://localhost:5678/api/works/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          method: 'DELETE', // Méthode HTTP DELETE
+          headers: { 'Authorization': `Bearer ${token}` } // Headers avec le token d'authentification
         });
-
-        if (res.ok) {
-          // Rafraîchir la galerie de la modale
-          await refreshModalGallery();
-          // Rafraîchir la galerie principale
-          await getWorks();
+        
+        if (res.ok) { // Si la suppression a réussi (status 200-299)
+          await loadGalleryView(); // Recharge la galerie de la modale pour retirer l'image supprimée
+          await getWorks(); // Recharge aussi la galerie principale
         } else {
-          alert(`Suppression impossible (HTTP ${res.status})`);
+          alert(`Suppression impossible (HTTP ${res.status})`); // Si la suppression a échoué, affiche le code d'erreur
         }
-      } catch (err) {
-        console.error('Erreur suppression:', err);
-        alert('Erreur lors de la suppression');
+      } catch (err) { // Si une erreur réseau ou autre se produit
+        console.error('Erreur suppression:', err); // Affiche l'erreur dans la console
+        alert('Erreur lors de la suppression'); // Informe l'utilisateur
       }
     }
   }
 
-  // ========== ÉVÉNEMENTS GLOBAUX ==========
-
-  // Fermer avec Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('show')) {
-      closeModal();
-    }
-  });
-
-  // Fermer au clic en dehors
-  modal.addEventListener('click', function (e) {
-    if (e.target === modal) {
-      closeModal();
-    }
-  });
-
-  // Connecter le bouton modifier
-  const editBtn = document.querySelector('.edit-btn');
-  if (editBtn) {
-    editBtn.addEventListener('click', openModal);
+  document.addEventListener('click', function(e) { //1 seul écouteur pour gérer TOUS les clics
+  
+  // Bouton "MODIFIER"
+  if (e.target.classList.contains('edit-btn')) {
+    openModalGallery();
   }
-}); // ✅ Fin du window.addEventListener("load")
+  
+  // Bouton "AJOUTER UNE PHOTO"
+  if (e.target.id === 'btn-show-add') {
+    openModalAdd();
+  }
+  
+  // Bouton "RETOUR" 
+  if (e.target.closest('.modal-back')) {
+    openModalGallery();
+  }
+  
+  // Boutons "FERMER" 
+  if (e.target.classList.contains('modal-close')) {
+    closeModals();
+  }
+  
+  // Bouton "SUPPRIMER"
+  if (e.target.closest('.delete-work')) {
+    const btn = e.target.closest('.delete-work');
+    deleteWork(btn.dataset.id);
+  }
+  
+  // Fermer en cliquant sur l'overlay
+  if (e.target === modalGallery || e.target === modalAdd) {
+    closeModals();
+  }
+});
 
-console.log('Figures dans .gallery:', document.querySelectorAll('.gallery figure').length);
-console.log('Contenu de .gallery:', document.querySelector('.gallery').innerHTML.substring(0, 200));
+// Fermer avec la touche Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (modalGallery.classList.contains('show') || modalAdd.classList.contains('show')) {
+      closeModals();
+    }
+  }
+});
 
+  // ========== GESTION DU FORMULAIRE D'AJOUT ==========
+const addPhotoForm = document.getElementById('add-photo-form'); // Récupère le formulaire
+if (addPhotoForm) { // Si le formulaire existe
+  
+  // PRÉVISUALISATION DE L'IMAGE
+const photoUpload = document.getElementById('photo-upload'); // Récupère l'input de type file pour l'upload de photo
+const uploadZone = document.getElementById('upload-zone'); // Récupère la zone d'affichage de la prévisualisation
 
-
-
-
-//1.	J’ai utilisé forEach au lieu de for (...) plus lisible.//
-//	2.	J’ai supprimé setFigure et setFilter → directement intégrés là où on en a besoin (moins de fonctions dispersées).//
-//3.	J’ai utilisé innerHTML pour la <figure> (rapide et court)-> API contrôlée, projet simple, pas d'événements//
-//	4.	J’ai mis les await directement dans les appels initiaux pour bien enchaîner.//
+photoUpload.addEventListener('change', function(e) { // Écoute l'événement change' déclenché quand l'utilisateur sélectionne un fichier
+  const file = e.target.files[0]; // Récupère le premier fichier sélectionné par l'utilisateur
+  if (!file) return; // Si aucun fichier n'est sélectionné, arrête la fonction
+  
+  // Supprimer l'ancienne prévisualisation
+  const oldPreview = uploadZone.querySelector('img.preview'); // Cherche s'il existe déjà une image de prévisualisation
+  if (oldPreview) { // Si une ancienne prévisualisation existe
+    URL.revokeObjectURL(oldPreview.src); // Libère la mémoire en supprimant l'URL temporaire précédente
+    oldPreview.remove(); // Supprime l'ancienne image du DOM
+  }
+  
+  // Créer la nouvelle prévisualisation
+  const img = document.createElement('img'); // Crée un nouvel élément <img> pour la prévisualisation
+  img.src = URL.createObjectURL(file); // Crée une URL temporaire pointant vers le fichier local (plus rapide que base64)
+  img.className = 'preview'; // Ajoute la classe CSS 'preview' pour le style
+  img.alt = 'Aperçu de l\'image'; // Définit le texte alternatif pour l'accessibilité
+  
+  uploadZone.classList.add('has-preview'); // Ajoute la classe 'has-preview' pour cacher l'icône et le texte d'upload
+  uploadZone.prepend(img); // Insère l'image au début de la zone d'upload (avant les autres éléments)
+  
+  checkFormValidity(); // Vérifie si tous les champs du formulaire sont remplis pour activer le bouton "Valider"
+});
+  
+  // ===== VALIDATION DU FORMULAIRE =====
+  // Fonction qui vérifie si tous les champs sont remplis
+  function checkFormValidity() {
+    const title = document.getElementById('photo-title').value.trim(); // Récupère la valeur du champ titre et supprime les espaces avant/après avec trim() - Pour éviter que l’utilisateur entre "   Mon image  " et que ton script traite ça comme "Mon image"
+    const category = document.getElementById('photo-category').value;  // Récupère la valeur sélectionnée dans le select des catégories
+    const file = photoUpload.files[0]; // Récupère le fichier sélectionné dans l'input file
+    const submitBtn = addPhotoForm.querySelector('.btn-validate'); // Récupère le bouton de soumission du formulaire
+    
+    // Active le bouton si tous les champs sont remplis
+    if (title && category && file) { // Vérifie que les 3 champs sont remplis (title non vide, category choisie, file sélectionné)
+      submitBtn.disabled = false; // Si tous les champs sont remplis, active le bouton (le rend cliquable et vert)
+    } else { 
+      submitBtn.disabled = true; // Sinon, désactive le bouton (gris et non cliquable)
+    }
+  }
+  
+  document.getElementById('photo-title').addEventListener('input', checkFormValidity);  // Écoute l'événement 'input' sur le champ titre (déclenché à chaque frappe au clavier) - à chaque changement, vérifie la validité du formulaire
+  document.getElementById('photo-category').addEventListener('change', checkFormValidity);  // Écoute l'événement 'change' sur le select catégorie (déclenché quand on choisit une option) à chaque changement, vérifie la validité du formulaire
+  
+  // ===== SOUMISSION DU FORMULAIRE =====
+  addPhotoForm.addEventListener('submit', async function(e) {   // Écoute l'événement 'submit' sur le formulaire (déclenché quand on clique sur "Valider")
+    e.preventDefault(); // Empêche le rechargement de la page
+    
+    const token = sessionStorage.getItem('authToken'); // Récupère le token d'authentification
+    if (!token) { // Si pas de token, l'utilisateur n'est pas connecté
+      alert('Vous devez être connecté pour ajouter un projet');
+      return;
+    }
+    
+    const title = document.getElementById('photo-title').value.trim(); // Récupère la valeur du champ titre (avec trim pour supprimer les espaces)
+    const category = document.getElementById('photo-category').value; // Récupère la valeur de la catégorie sélectionnée
+    const file = photoUpload.files[0]; // Récupère le fichier image sélectionné
+    
+    // Vérifie que tous les champs sont remplis
+    if (!title || !category || !file) {  // Si un champ manque, affiche une alerte et arrête la fonction
+      alert('Veuillez remplir tous les champs');
+      return;
+    }
+    
+    const formData = new FormData(); // Crée un objet FormData qui permet d'envoyer des fichiers via HTTP
+    formData.append('title', title); // Ajoute le titre au FormData avec la clé 'title'
+    formData.append('category', category); // Ajoute l'ID de la catégorie au FormData avec la clé 'category'
+    formData.append('image', file); // Ajoute le fichier image au FormData avec la clé 'image'
+    
+    const submitBtn = addPhotoForm.querySelector('.btn-validate'); // Récupère le bouton de soumission pour le désactiver pendant l'envoi
+    submitBtn.disabled = true; // Désactive le bouton pour éviter les doubles clics
+    submitBtn.textContent = 'Envoi en cours...'; // Change le texte du bouton pour indiquer que l'envoi est en cours
+    
+    try {
+      const response = await fetch('http://localhost:5678/api/works', { // Fait un appel HTTP POST vers l'API pour créer un nouveau projet
+        method: 'POST',
+        headers: { // Headers HTTP : uniquement Authorization avec le token
+          'Authorization': `Bearer ${token}`// Ajoute le token Bearer pour l'authentification
+        },
+        body: formData // Corps de la requête : envoie le FormData contenant l'image et les données
+      });
+      
+      if (response.ok) { // Vérifie si la réponse HTTP est OK (status 200-299)
+        const newWork = await response.json(); // Convertit la réponse JSON en objet JavaScript (le nouveau projet créé)
+        
+        console.log('Projet ajouté avec succès :', newWork); // Affiche dans la console le projet nouvellement créé pour le débogage
+        
+        await loadGalleryView(); // Recharge la galerie de la modale pour afficher le nouveau projet
+        await getWorks(); // Recharge la galerie principale de la page pour afficher le nouveau projet
+        
+        openModalGallery(); // Ferme la modale ajout et ouvre la modale galerie pour voir le résultat
+        
+        addPhotoForm.reset(); // Réinitialise tous les champs du formulaire (vide les inputs)
+        uploadZone.classList.remove('has-preview'); // Retire la classe 'has-preview' pour réafficher l'icône et le bouton d'upload
+        const preview = uploadZone.querySelector('img.preview'); // Cherche l'image de prévisualisation dans la zone upload
+        if (preview) preview.remove(); // Si une image de prévisualisation existe, la supprime du DOM
+        
+      } else { // Si l'API retourne une erreur (erreur 400, 401, 500, etc.)
+        const error = await response.json(); // Tente de récupérer le message d'erreur renvoyé par l'API en JSON
+        console.error('Erreur API :', error); // Affiche l'erreur dans la console pour le débogage
+        alert(`Erreur lors de l'ajout : ${error.message || response.status}`); // Affiche une alerte à l'utilisateur avec le message d'erreur ou le code HTTP
+      }
+      
+    } catch (err) { // Si une erreur réseau se produit
+      console.error('Erreur lors de l\'ajout :', err); // Affiche l'erreur dans la console pour le débogage
+      alert('Erreur lors de l\'ajout du projet. Vérifiez votre connexion.'); // Affiche une alerte à l'utilisateur pour l'informer du problème
+      
+    } finally { // Bloc finally : s'exécute TOUJOURS, que la requête ait réussi ou échoué
+      submitBtn.disabled = false; // Réactive le bouton pour permettre une nouvelle tentative
+      submitBtn.textContent = 'Valider'; // Remet le texte d'origine sur le bouton
+    }
+  });
+}
+  
+}); // Fin du window.addEventListener("load")

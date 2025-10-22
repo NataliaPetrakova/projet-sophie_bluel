@@ -31,12 +31,12 @@ table { border-collapse: collapse; border-spacing: 0; }
 /* ===== Base ===== */
 body {
   line-height: 1;
-  background-color: #fffef8;
+  background-color: #FFFFFF;
   font-family: 'Work Sans';
   font-size: 14px;
   min-height: 100vh;
-  position: relative;  /* Pour le positionnement du footer */
-  padding-bottom: 60px; /* Espace pour le footer (ajuster selon la hauteur réelle) */
+  position: relative;
+  padding-bottom: 60px;
 }
 
 a {
@@ -47,45 +47,52 @@ a:hover { font-weight: bold; }
 
 /* ----- Barre noire en haut ----- */
 .topbar {
+  position: fixed; 
   top: 0;
   left: 0;
   right: 0;
   height: 59px;
   background: #000000;
-  color: #fffef8;
-  display: flex;
+  color: #FFFFFF;
+  display: none; 
   align-items: center;
-  justify-content: center; /* centre horizontalement le contenu */
-  gap: 10px;               /* espace entre icône et texte */
+  justify-content: center;
+  gap: 10px;
   font-family: 'Work Sans', sans-serif;
   font-size: 16px;
   line-height: 1;
   z-index: 1000;
-  box-shadow: 0 8px 16px rgba(0,0,0,.12); /* ombre légère comme la maquette */
+  box-shadow: 0 8px 16px rgba(0,0,0,.12);
+}
+
+/* Visible uniquement en mode admin */
+.is-admin .topbar {
+  display: flex; /* ← Affiche la topbar quand is-admin est actif */
 }
 
 .topbar i {
-  color: #fffef8;
+  color: #FFFFFF;
   font-size: 16px;
 }
 
-/* ----- Bouton “modifier” ----- */
-/* Conteneur pour le titre et le bouton */
+/* Ajuste le container pour ne pas être caché sous la topbar en mode admin */
+.is-admin .container {
+  margin-top: 59px; /* Hauteur de la topbar */
+}
+
+/* ----- Bouton "modifier" ----- */
 #portfolio {
   text-align: center;
 }
 
-/* Wrapper pour aligner titre + bouton */
-/* Conteneur pour titre + bouton */
 .projets-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;  
+  gap: 30px;
   margin: 50px 0 80px 0;
 }
 
-/* Le titre */
 .projets-header h2 {
   margin: 0;
   color: #1D6154;
@@ -94,9 +101,8 @@ a:hover { font-weight: bold; }
   font-size: 30px;
 }
 
-/* Le bouton modifier */
 .edit-btn {
-  display: none;  /* Caché par défaut */
+  display: none;
   align-items: center;
   gap: 10px;
   background: none;
@@ -109,9 +115,8 @@ a:hover { font-weight: bold; }
   cursor: pointer;
 }
 
-/* Visible seulement en mode admin */
 .is-admin .edit-btn {
-  display: flex;  
+  display: flex;
 }
 
 .edit-btn i {
@@ -122,16 +127,15 @@ a:hover { font-weight: bold; }
   color: #1D6154;
 }
 
-/* Cacher les filtres en mode admin */
 .is-admin #filters,
 .is-admin .div-categories {
   display: none;
 }
 
-.container{
+.container {
   max-width: 1140px;
   margin: 0 auto;
-  padding: 0 20px 0; 
+  padding: 0 20px 0;
 }
 
 /* ===== Layout global ===== */
@@ -141,7 +145,7 @@ header {
   padding: 50px 0;
 }
 
-section { 
+section {
   margin: 0 0 90px 0;
 }
 
@@ -154,6 +158,7 @@ h1 {
   font-weight: 800;
   color: #B1663C;
 }
+
 h1 > span {
   font-family: 'Work Sans';
   font-size: 10px;
@@ -172,10 +177,12 @@ nav ul {
   display: flex;
   align-items: center;
 }
+
 nav li {
   padding: 0 10px;
   font-size: 1.2em;
 }
+
 li:hover { color: #B1663C; }
 
 /* ===== Introduction ===== */
@@ -183,50 +190,50 @@ li:hover { color: #B1663C; }
   display: flex;
   align-items: center;
 }
+
 #introduction figure { flex: 1; }
+
 #introduction img {
   display: block;
   margin: auto;
   width: 80%;
 }
+
 #introduction article { flex: 1; }
 #introduction h2 { margin-bottom: 1em; }
 #introduction p { margin-bottom: 0.5em; }
 
-
 /* Zone filtres */
-.div-categories{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:10px;
-  margin:50px 0;
-  flex-wrap:wrap;
+.div-categories {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 50px 0;
+  flex-wrap: wrap;
 }
 
-/* Les boutons-pills (remplace l’ancien .div-categories div) */
-.div-categories .filter{
-  appearance:none;           /* reset bouton natif */
-  -webkit-appearance:none;
-  border:1px solid #1D6154;
-  background:#fff;           /* ou #e7f1f5 si tu veux */
-  color:#1D6154;
-  padding:10px 25px;
-  border-radius:60px;
-  font-family:'Syne', sans-serif;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-  user-select:none;
-  transition:all .2s ease;
+.div-categories .filter {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #1D6154;
+  background: #FFFFFF;
+  color: #1D6154;
+  padding: 10px 25px;
+  border-radius: 60px;
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all .2s ease;
 }
 
 .div-categories .filter:hover,
-.div-categories .filter.is-active{
-  background:#1D6154;
-  color:#fff;
+.div-categories .filter.is-active {
+  background: #1D6154;
+  color: #FFFFFF;
 }
-
 
 /* Grille */
 .gallery {
@@ -235,17 +242,17 @@ li:hover { color: #B1663C; }
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 }
+
 .gallery img { width: 100%; }
 
 .gallery figure {
-  display: block;              /* par défaut visible */
+  display: block;
   transition: opacity .3s ease;
 }
 
 .gallery figure.is-hidden {
-  display: none;             
+  display: none;
 }
-
 
 /* ===== Contact + Login ===== */
 #contact,
@@ -253,32 +260,38 @@ li:hover { color: #B1663C; }
   width: 50%;
   margin: auto;
 }
+
 #contact, #login > * { text-align: center; }
 #contact h2, #login h2 { margin-bottom: 20px; }
+
 #contact form, #login form {
   text-align: left;
   margin: 30px 0;
   display: flex;
   flex-direction: column;
 }
+
 #contact input, #login input {
   height: 50px;
   font-size: 1.2em;
   border: none;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
 }
+
 #contact label, #login label {
   margin: 2em 0 1em 0;
   font-weight: 500;
 }
+
 #contact textarea {
   border: none;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
 }
+
 input[type="submit"] {
   font-family: 'Syne';
   font-weight: 700;
-  color: #fff;
+  color: #FFFFFF;
   background-color: #1D6154;
   margin: 2em auto;
   width: 180px;
@@ -287,12 +300,12 @@ input[type="submit"] {
   cursor: pointer;
 }
 
-
 #login form a {
   text-decoration: underline;
-  color: #3d3d3d;
+  color: #3D3D3D;
   font-weight: 500;
 }
+
 #login form p {
   text-align: center;
   margin-top: 15px;
@@ -303,128 +316,47 @@ footer {
   position: absolute;
   bottom: 0;
   left: 0;
-  background: #fff;
+  background: #FFFFFF;
   width: 100%;
   padding: 20px 0;
 }
+
 footer nav {
   max-width: 1140px;
   margin: 0 auto;
   padding: 0 20px;
 }
+
 footer nav ul {
   display: flex;
   justify-content: flex-end;
   gap: 20px;
 }
-footer nav ul li a { 
+
+footer nav ul li a {
   font-size: 14px;
   font-weight: 400;
 }
-footer nav ul li a:hover { 
+
+footer nav ul li a:hover {
   font-weight: 500;
 }
 
 .error-message {
-    background-color: #ffe6e6;  
-    border: 1px solid #ffcccc;
-    border-radius: 8px;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    margin: 20px 0;
-    box-shadow: 0 2px 4px rgba(255, 0, 0, 0.1);
-	display: none;
-}
-
-/* overlay */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
+  background-color: #ffe6e6;
+  border: 1px solid #ffcccc;
+  border-radius: 8px;
+  padding: 15px 20px;
   display: none;
-  justify-content: center;
   align-items: center;
-  z-index: 9999;
-}
-
-/* box */
-.modal-content {
-  background: #fff;
-  padding: 60px 30px;
-  border-radius: 10px;
-  width: 630px;
-  max-width: 90%;
-  position: relative;
-  font-family: 'Work Sans', sans-serif;
-}
-
-.modal-content h2 {
-  text-align: center;
-  margin-bottom: 40px;
-  font-weight: 400;
-  font-size: 26px;
-  color: #000;
-}
-
-.close-btn {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-/* galerie */
-.modal-gallery {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 40px;
-}
-.modal-gallery figure {
-  position: relative;
-  margin: 0;
-}
-.modal-gallery img {
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
-}
-.delete-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: black;
-  color: white;
-  border: none;
-  padding: 4px 6px;
-  cursor: pointer;
-  border-radius: 2px;
-}
-
-/* Boutons */
-.btn-add, .btn-validate {
-  background: #1D6154;
-  color: white;
-  padding: 10px 49px;
-  border-radius: 60px;
-  border: none;
-  font-family: 'Syne', sans-serif;
-  font-size: 14px;
-  cursor: pointer;
-}
-.btn-add {
-  margin-top: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 4px rgba(255, 0, 0, 0.1);
 }
 
 /* ========== STYLES DE LA MODALE ========== */
 
 /* Overlay de la modale */
-#modal {
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -435,22 +367,42 @@ footer nav ul li a:hover {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  overflow: hidden;
+  /*overflow: visible; */
 }
 
-#modal.show {
+/* Visible avec la classe .show */
+.modal.show {
   display: flex;
 }
 
-/* Container de la modale */
+/* Empêcher le scroll du body quand modale ouverte */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Container de la modale - TAILLE IDENTIQUE POUR LES 2 MODALES */
 .modal-wrapper {
   position: relative;
-  background-color: white;
+  background-color: #fff;
   border-radius: 10px;
-  padding: 60px 100px 45px;
-  width: 90%;
-  max-width: 630px;
-  max-height: 85vh;
+  padding: 60px 60px;
+  width: 630px;
+  max-width: 90vw;
+  max-height: 90vh;
   overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Cache la scrollbar mais garde le scroll */
+.modal-wrapper::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+.modal-wrapper {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Bouton de fermeture */
@@ -469,11 +421,42 @@ footer nav ul li a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1002;
 }
 
 .modal-close:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  opacity: 0.7;
+}
+
+.modal-close i {
+  pointer-events: none;
+}
+
+/* Bouton retour */
+.modal-back {
+  position: absolute;
+  top: 26px;
+  left: 30px;
+  background: none;
+  border: none;
+  width: 21px;
+  height: 21px;
+  font-size: 21px;
+  cursor: pointer;
+  color: #000000;
+  z-index: 1002;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-back:hover {
+  opacity: 0.7;
+}
+
+.modal-back i {
+  pointer-events: none;
 }
 
 /* Titre de la modale */
@@ -482,35 +465,32 @@ footer nav ul li a:hover {
   font-size: 26px;
   font-weight: 400;
   text-align: center;
-  color: #000;
+  color: #000000;
   margin: 0 0 46px 0;
 }
 
-/* Galerie modale - MÊME PRINCIPE que .gallery principale */
+/* Galerie modale */
 .modal-gallery {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-gap: 10px;
+  gap: 6px;
   margin-bottom: 47px;
-  grid-auto-rows: auto; /* Hauteurs automatiques pour chaque ligne */
-  align-items: start; /* Aligne en haut */
 }
 
-/* Figures dans la modale - proportions naturelles comme la maquette */
+/* Figures dans la modale */
 .modal-gallery figure,
 .modal-figure {
   position: relative;
   margin: 0;
   width: 100%;
-  /* PAS d'aspect-ratio forcé - hauteurs variables */
 }
 
 .modal-gallery figure img,
 .modal-figure img {
   width: 100%;
-  height: auto; /* Hauteur automatique = proportions naturelles */
+  height: auto;
   display: block;
-  vertical-align: middle;
+  object-fit: cover;
 }
 
 /* Bouton de suppression sur chaque image */
@@ -520,7 +500,7 @@ footer nav ul li a:hover {
   right: 6px;
   width: 17px;
   height: 17px;
-  background-color: #000;
+  background-color: #000000;
   border: none;
   border-radius: 2px;
   cursor: pointer;
@@ -528,8 +508,9 @@ footer nav ul li a:hover {
   align-items: center;
   justify-content: center;
   padding: 0;
-  color: white;
+  color: #FFFFFF;
   font-size: 9px;
+  z-index: 10;
 }
 
 .delete-work:hover {
@@ -538,7 +519,8 @@ footer nav ul li a:hover {
 
 .delete-work i {
   font-size: 9px;
-  color: white;
+  color: #FFFFFF;
+  pointer-events: none;
 }
 
 /* Séparateur */
@@ -552,67 +534,169 @@ footer nav ul li a:hover {
 
 /* Bouton ajouter une photo */
 .btn-add-photo {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto;
-  padding: 10px 49px;
+  width: 237px;
+  height: 36px;
   background-color: #1D6154;
-  color: white;
+  color: #FFFFFF;
   border: none;
   border-radius: 60px;
   font-family: 'Syne', sans-serif;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 .btn-add-photo:hover {
   background-color: #0E2F28;
 }
 
-/* Responsive pour tablettes */
-@media (max-width: 768px) {
-  .modal-wrapper {
-    padding: 40px 30px;
-    width: 95%;
-  }
-  
-  .modal-gallery {
-    grid-template-columns: repeat(4, 1fr);
-  }
+/* ========== FORMULAIRE D'AJOUT ========== */
+
+.add-photo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
 }
 
-/* Responsive pour mobiles */
-@media (max-width: 480px) {
-  .modal-gallery {
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 8px;
-  }
-  
-  .btn-add-photo {
-    padding: 10px 30px;
-    font-size: 13px;
-  }
-  
-  .modal-wrapper {
-    padding: 30px 20px;
-  }
-}
-
-/* Scrollbar personnalisée */
-.modal-wrapper::-webkit-scrollbar {
-  width: 6px;
-}
-
-.modal-wrapper::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.modal-wrapper::-webkit-scrollbar-thumb {
-  background: #888;
+/* Zone de téléchargement */
+.upload-zone {
+  background-color: #E8F1F6;
   border-radius: 3px;
+  padding: 28px 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 21px;
+  margin-bottom: 9px;
 }
 
-.modal-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.upload-zone i {
+  font-size: 76px;
+  color: #B9C5CC;
+  display: block;
+}
+
+.upload-label {
+  display: inline-block;
+  background-color: #CBD6DC;
+  color: #306685;
+  padding: 10px 33px;
+  border-radius: 50px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.upload-label:hover {
+  background-color: #B9C5CC;
+}
+
+.upload-info {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 10px;
+  color: #444444;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* Groupes de formulaire */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3D3D3D;
+  text-align: left;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  padding: 15px 16px;
+  border: none;
+  box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09);
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  color: #444444;
+  background-color: #FFFFFF;
+  border-radius: 0;
+  outline: none;
+}
+
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23444' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.15);
+}
+
+/* Séparateur avant le bouton */
+.add-photo-form hr {
+  margin: 26px 0 9px 0;
+}
+
+/* Bouton valider */
+.btn-validate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: 237px;
+  height: 36px;
+  background-color: #A7A7A7;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 60px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: not-allowed;
+  transition: background-color 0.3s ease;
+}
+
+.btn-validate:not(:disabled) {
+  background-color: #1D6154;
+  cursor: pointer;
+}
+
+.btn-validate:not(:disabled):hover {
+  background-color: #0E2F28;
+}
+
+/* Preview de l'image uploadée */
+.upload-zone img.preview {
+  max-width: 100%;
+  max-height: 169px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Cacher les éléments quand preview active */
+.upload-zone.has-preview i,
+.upload-zone.has-preview .upload-label,
+.upload-zone.has-preview .upload-info {
+  display: none;
 }
