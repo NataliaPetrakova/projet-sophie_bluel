@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => { //plus réactif que LOAD//
-    const LOGIN_URL = "http://localhost:5678/api/users/login";
+    const API_URL = "http://localhost:5678/api"; 
+    const LOGIN_URL = `${API_URL}/users/login`; 
 
     const loginForm = document.getElementById("loginForm"); //Récupèrationd du formulaire de connexion grâce à son ID//
     if (loginForm) {      // Si le formulaire existe, on lui ajoute un "écouteur d'événement"//

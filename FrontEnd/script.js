@@ -1,4 +1,6 @@
 // ========== FONCTION COMMUNE POUR FETCH (GLOBALE) ==========
+const API_URL = "http://localhost:5678/api";
+
 async function fetchData(url) { // Fonction asynchrone réutilisable pour tous les appels API
   try { // Bloc try pour gérer les erreurs
     const res = await fetch(url); // Appel API et attente de la réponse
@@ -51,7 +53,7 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
 
   // ========== RÉCUPÈRE ET AFFICHE LES PROJETS ==========
   async function getWorks() { // Fonction pour charger tous les projets depuis l'API
-    const works = await fetchData("http://localhost:5678/api/works"); // Appel API pour récupérer les works
+    const works = await fetchData(`${API_URL}/works`); // Appel API pour récupérer les works
     
     if (!works) { // Si l'API a échoué (fetchData a retourné null)
       gallery.innerHTML = "<p class='error'>Impossible de charger les images</p>"; // Message d'erreur dans la galerie
@@ -77,7 +79,6 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
 
   // ========== FILTRAGE (avec classList.toggle) ==========
   function applyFilter(id) { // Fonction qui masque/affiche selon la catégorie
-    console.log(`=== FILTRAGE : ID cliqué = "${id}" (type: ${typeof id}) ===`); // Debug
     
     for (let i = 0; i < figures.length; i++) { // Parcourt toutes les figures
       const figCatId = figures[i].dataset.catId; // ID de catégorie de la figure
@@ -90,7 +91,7 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
 
   // ========== RÉCUPÈRE ET AFFICHE LES CATÉGORIES ==========
   async function getCategories() { // Fonction pour créer les boutons de filtre
-    const cats = await fetchData("http://localhost:5678/api/categories"); // Récupère les catégories depuis l'API
+    const cats = await fetchData(`${API_URL}/categories`); // Récupère les catégories depuis l'API
     
     if (!cats) { // Si l'API a échoué
       categoriesDiv.innerHTML = "<p class='error'>Impossible de charger les catégories</p>"; // Message d'erreur
@@ -219,7 +220,7 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
     const galleryGrid = document.getElementById('modal-gallery-grid'); // Récupère le conteneur de la grille de miniatures dans la modale
     if (!galleryGrid) return;  // Si le conteneur n'existe pas, arrête la fonction
     
-    const works = await fetchData("http://localhost:5678/api/works"); // Appelle l'API pour récupérer tous les projets
+    const works = await fetchData(`${API_URL}/works`); // Appelle l'API pour récupérer tous les projets
     
     if (!works) { // Si l'API a échoué
       galleryGrid.innerHTML = '<p>Erreur de chargement</p>'; // Affiche un message d'erreur dans la grille
@@ -257,7 +258,7 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
     const select = document.getElementById('photo-category'); // Récupère l'élément <select> du formulaire d'ajout
     if (!select) return; // Si le select n'existe pas, arrête la fonction
     
-    const cats = await fetchData("http://localhost:5678/api/categories"); // Appelle l'API pour récupérer les catégories
+    const cats = await fetchData(`${API_URL}/categories`); // Appelle l'API pour récupérer les catégories
     if (!cats) { // Si l'API a échoué
       console.error('Impossible de charger les catégories'); // Affiche une erreur dans la console
       return;
@@ -283,7 +284,7 @@ window.addEventListener("load", async () => { // Attend que toute la page soit c
     
     if (confirm('Voulez-vous vraiment supprimer ce projet ?')) { // Demande confirmation à l'utilisateur avant de supprimer confirm retourne true si OK, false si Annuler
       try { // Fait un appel API DELETE pour supprimer le projet
-        const res = await fetch(`http://localhost:5678/api/works/${id}`, {
+        const res = await fetch(`${API_URL}/works/${id}`, {
           method: 'DELETE', // Méthode HTTP DELETE
           headers: { 'Authorization': `Bearer ${token}` } // Headers avec le token d'authentification
         });
@@ -424,7 +425,7 @@ photoUpload.addEventListener('change', function(e) { // Écoute l'événement ch
     submitBtn.textContent = 'Envoi en cours...'; // Change le texte du bouton pour indiquer que l'envoi est en cours
     
     try {
-      const response = await fetch('http://localhost:5678/api/works', { // Fait un appel HTTP POST vers l'API pour créer un nouveau projet
+      const response = await fetch(`${API_URL}/works`, { // Fait un appel HTTP POST vers l'API pour créer un nouveau projet
         method: 'POST',
         headers: { // Headers HTTP : uniquement Authorization avec le token
           'Authorization': `Bearer ${token}`// Ajoute le token Bearer pour l'authentification
